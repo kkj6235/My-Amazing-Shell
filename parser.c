@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020-2023
+ * Copyright (c) 2020-2024
  *  Sang-Hoon Kim <sanghoonkim@ajou.ac.kr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,23 +17,22 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include "types.h"
 #include "parser.h"
 
-int parse_command(char *command, int *nr_tokens, char *tokens[])
+int parse_command(char *command, char *tokens[])
 {
 	const char *delimiters = " \t\r\f\r\n\v";
 	char *curr;
-	*nr_tokens = 0;
+	int nr_tokens = 0;
 
 	while ((curr = strtok(command, delimiters))) {
 		*tokens++ = strdup(curr);
-		(*nr_tokens)++;
+		nr_tokens++;
 		command = NULL;
 	}
 	*tokens = NULL;
 
-	return (*nr_tokens > 0);
+	return nr_tokens;
 }
 
 void free_command_tokens(char *tokens[])

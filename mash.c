@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020-2023
+ * Copyright (c) 2020-2024
  *  Sang-Hoon Kim <sanghoonkim@ajou.ac.kr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <getopt.h>
 
-#include "types.h"
 #include "parser.h"
 
 extern int run_command(int nr_tokens, char *tokens[]);
@@ -73,11 +73,13 @@ int main(int argc, char * const argv[])
 	
 		if (!fgets(command, sizeof(command), stdin)) break;
 
-		parse_command(command, &nr_tokens, tokens);
-
+		nr_tokens = parse_command(command, tokens);
 		if (nr_tokens == 0) continue;
 
 		ret = run_command(nr_tokens, tokens);
+		if (ret < 0) {
+			fprintf(stderr, "Unable to execute %s\n", tokens[0]);
+		}
 
 		free_command_tokens(tokens);
 

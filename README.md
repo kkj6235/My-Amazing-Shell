@@ -42,19 +42,6 @@ Let's build my amazing shell with those system calls.
 
 - Your task is to **EXECUTE** external executables (such as `ls`, `pwd`, and `cp`), **NOT to implement** the features of the commands.
 
-- When the specified executable cannot be executed for some reasons, print out the following message to `stderr`.
-
-  ```C
-  if (unable to execute the specified command) {
-    fprintf(stderr, "Unable to execute %s\n", the first token of the command);
-  }
-  ```
-  ```bash
-  $ blah blahhhh  # Enter a non-existing executable
-  Unable to execute blah
-  $
-  ```
-
 - Use the `toy` program which is included in the handout code for your development and testing. It simply prints out the arguments it receives, so you can check whether your implementation handles input commands properly.
 
   ```bash

@@ -25,8 +25,7 @@
  * parse_command()
  *
  * DESCRIPTION
- *  Parse @command, and put each command token into @tokens[] and the number of
- *  tokens into @nr_tokens.
+ *  Parse @command, and put each command token into @tokens[].
  *
  *  A command token is defined as a string without any whitespace (i.e., *space*
  *  and *tab* in this programming assignment). For exmaple,
@@ -42,13 +41,11 @@
  *  Each token is allocated from the heap, so you need to deallcate them by 
  *  calling @free_command_tokens after use.
  *
- *
  * RETURN VALUE
- *  Return 1 if @nr_tokens > 0
- *  Return 0 otherwise
+ *  Return the number of @tokens[]
  *
  */
-int parse_command(char *command, int *nr_tokens, char *tokens[]);
+int parse_command(char *command, char *tokens[]);
 
 
 /***********************************************************************

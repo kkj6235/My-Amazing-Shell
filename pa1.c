@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020-2023
+ * Copyright (c) 2020-2024
  *  Sang-Hoon Kim <sanghoonkim@ajou.ac.kr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,8 +32,7 @@ int run_command(int nr_tokens, char *tokens[])
 {
 	if (strcmp(tokens[0], "exit") == 0) return 0;
 
-	fprintf(stderr, "Unable to execute %s\n", tokens[0]);
-	return 1;
+	return -1;
 }
 
 

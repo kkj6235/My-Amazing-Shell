@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2020
+ * Copyright (c) 2020-2024
  *  Sang-Hoon Kim <sanghoonkim@ajou.ac.kr>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <signal.h>
 
 int main(int argc, const char *argv[])
 {
