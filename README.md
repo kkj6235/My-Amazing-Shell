@@ -190,7 +190,7 @@ Let's build my amazing shell with those system calls.
   - Explain your approach to implement the aliasing feature.
   - Your strategy to implement the pipe, including how many forks did you used and for what.
   - AND lessons learned
-
+- The document should comply the following restrictions
   - Focus on explaining your idea and approaches, not reading your code.
   - NO MORE THAN ***FOUR*** PAGES
   - SHOULD INCLUDE ALL ITEMS INSTRUCTED ABOVE
