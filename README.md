@@ -190,13 +190,12 @@ Let's build my amazing shell with those system calls.
   - Explain your approach to implement the aliasing feature.
   - Your strategy to implement the pipe, including how many forks did you used and for what.
   - AND lessons learned
-- The document should comply the following restrictions
   - Focus on explaining your idea and approaches, not reading your code.
-  - NO MORE THAN ***FOUR*** PAGES
-  - SHOULD INCLUDE ALL ITEMS INSTRUCTED ABOVE
-  - DO NOT INCLUDE COVER PAGE, YOUR NAME, NOR STUDENT ID
-  - DO NOT INCLUDE ANY CODE NOR SCREENSHOT ON THE DOCUMENT
-  - COMPLY THE STATEMENTS OTHERWISE YOU WILL GET 0 PTS FOR DOCUMENTATION
+- The document should comply following restrictions:
+  - No more than ***four*** pages
+  - Should include all items listed above
+  - Do not include cover page, your name, nor student id
+  - Do not include any code nor screenshot on the document
 
 - Git repository URL at git.ajou.ac.kr (10 pts)
   - To get the points, you should actually use the repository to manage your code.
