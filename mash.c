@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <errno.h>
 
 #include "parser.h"
 
@@ -83,7 +84,7 @@ int main(int argc, char * const argv[])
 
 		free_command_tokens(tokens);
 
-		if (ret == 0) break;
+		if (ret == 0 || ret == -EINVAL) break;
 	}
 
 	finalize(argc, argv);
