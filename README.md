@@ -163,6 +163,7 @@ Let's build my amazing shell with those system calls.
 - DO NOT DO FOLLOWINGS. You will get 0 pts if you don't follow the instructions.
   - Do not use `system()` system call.
   - Do not implement external programs' features by yourself (e.g., printing out a message to handle `echo` command, listing the current directory to handle `ls` command, etc).
+  - Do not make files to implement the pipe feature.
 - It is advised to test your code on your computer first and to implement incrementally. Some sample inputs are included under `testcases` directory. Try to input each line or just run `./mash < [input file]`.
 - FYI, the instructor's implementation took ~250 lines of C code. Believe me, the implementation is not difficult if you fully understand the concepts of processes.
 
