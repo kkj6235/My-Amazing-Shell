@@ -21,7 +21,7 @@ clean:
 
 .PHONY: test-run
 test-run: $(TARGET) toy testcases/test-run
-	./$< < testcases/test-run
+	./$< -q < testcases/test-run
 
 .PHONY: test-cd
 test-cd: $(TARGET) testcases/test-cd
