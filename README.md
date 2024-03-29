@@ -129,6 +129,9 @@ Let's build my amazing shell with those system calls.
   Hello world Korea   # 'world' is translated from xyz so it is not translated again to Korea
   ```
 
+- (Added 3/29 3pm) Don't worry about alias redefining, PASS would not check the case.
+
+
 - Hint
   - If `tokens[]` were a list of words, you might be able to implement the feature easily by replacing a word with multiple words.
   - Take care of the string in `tokens[]` which are allocated and deallocated in the functions in `parser.c`. It is advised to have a look at them before fiddling with `tokens[]`.
