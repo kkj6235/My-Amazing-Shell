@@ -37,6 +37,7 @@
 *.hex
 mash
 toy
+pipe
 
 # Debug files
 *.dSYM/
