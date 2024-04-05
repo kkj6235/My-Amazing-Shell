@@ -15,6 +15,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <sys/wait.h>
+#include <sys/stat.h>
 
 /***********************************************************************
  * run_command()
@@ -30,9 +35,47 @@
  */
 int run_command(int nr_tokens, char *tokens[])
 {
-	if (strcmp(tokens[0], "exit") == 0) return 0;
+    if (strcmp(tokens[0], "exit") == 0) return 0;
+    pid_t pid;
+    pid = fork();
+    int state;
 
-	return -1;
+    if (pid == 0) {
+        if (!strcmp(tokens[0], "cd")) {
+            if (!strcmp(tokens[1], "~") || nr_tokens == 1) {
+                if (chdir(getenv("HOME")) == -1) {
+//                    fprintf(stderr, "-bash: cd: %s: No such file or directory\n", tokens[1]);
+                    return -1;
+                }
+            } else {
+                if (chdir(tokens[1]) == -1) {
+//                    fprintf(stderr, "-bash: cd: %s: No such file or directory\n", tokens[1]);
+                    return -1;
+                }
+            }
+
+        }
+        else if (!strcmp(tokens[0], "/bin/pwd")|| !strcmp(tokens[0], "pwd")) {
+            char path[1024];
+            if (getcwd(path, sizeof(path)) == NULL) {
+                perror("현재 작업 위치 찾을 수 없음\n");
+                return -1;
+            }
+            else{
+                fprintf(stderr,"%s\n", path);
+            }
+
+        }
+        else {
+//            fprintf(stderr, "%s : command not found\n", tokens[0]);
+            return -1;
+        }
+
+
+    } else {
+        wait(&state);
+    }
+    return 1;
 }
 
 
