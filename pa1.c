@@ -33,9 +33,9 @@
  *   Return 0 when user inputs "exit"
  *   Return <0 on error
  */
-int run_command(int nr_tokens, char *tokens[])
-{
+int run_command(int nr_tokens, char *tokens[]) {
     if (strcmp(tokens[0], "exit") == 0) return 0;
+
     pid_t pid;
     pid = fork();
     int state;
@@ -54,24 +54,11 @@ int run_command(int nr_tokens, char *tokens[])
                 }
             }
 
+        } else if (!strcmp(tokens[0], "exit")) {
+            return 0;
+        } else {
+            return execv(tokens[0], tokens);
         }
-        else if (!strcmp(tokens[0], "/bin/pwd")|| !strcmp(tokens[0], "pwd")) {
-            char path[1024];
-            if (getcwd(path, sizeof(path)) == NULL) {
-                perror("현재 작업 위치 찾을 수 없음\n");
-                return -1;
-            }
-            else{
-                fprintf(stderr,"%s\n", path);
-            }
-
-        }
-        else {
-//            fprintf(stderr, "%s : command not found\n", tokens[0]);
-            return -1;
-        }
-
-
     } else {
         wait(&state);
     }
@@ -90,9 +77,8 @@ int run_command(int nr_tokens, char *tokens[])
  *   Return 0 on successful initialization.
  *   Return other value on error, which leads the program to exit.
  */
-int initialize(int argc, char * const argv[])
-{
-	return 0;
+int initialize(int argc, char *const argv[]) {
+    return 0;
 }
 
 
@@ -103,6 +89,5 @@ int initialize(int argc, char * const argv[])
  *   Callback function for finalizing your code. Like @initialize(),
  *   you may leave this function blank.
  */
-void finalize(int argc, char * const argv[])
-{
+void finalize(int argc, char *const argv[]) {
 }
