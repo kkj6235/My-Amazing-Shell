@@ -17,10 +17,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #include <sys/wait.h>
 #include <sys/stat.h>
 
+
+char *name[20], *value[20];
+int nr_alias=0;
 
 /***********************************************************************
  * run_command()
@@ -68,7 +72,8 @@ int run_command(int nr_tokens, char *tokens[]) {
             execvp(command_1[0], command_1);
             return -1;
 
-        } else {
+        }
+        else {
             if (!strcmp(tokens[0], "cd")) {
                 if (!strcmp(tokens[1], "~") || nr_tokens == 1) {
                     if (chdir(getenv("HOME")) == -1) {
@@ -80,9 +85,45 @@ int run_command(int nr_tokens, char *tokens[]) {
                     }
                 }
             }
-            else{
-                execvp(tokens[0], tokens);
+            else if(!strcmp(tokens[0], "alias")){
+                if(nr_tokens==1){
+                    for(int i=0;i<nr_alias;i++){
+                        fprintf(stderr,"%s: %s\n",name[i],value[i]);
+                    }
+                    return 1;
+                }
+                else {
+                    char temp[128];
+                    name[nr_alias] = (char *) malloc(sizeof(char) * (strlen(tokens[1])+1));
+                    strcpy(name[nr_alias], tokens[1]);
+
+                    strcpy(temp, tokens[2]);
+                    for(int i=3;i<nr_tokens;i++){
+                        strcat(temp, " ");
+                        strcat(temp, tokens[i]);
+                    }
+
+                    value[nr_alias] =(char *) malloc(sizeof(char) * (strlen(temp) + 1));
+                    strcpy(value[nr_alias], temp);
+
+                    nr_alias++;
+                    return 1;
+                }
             }
+            else if(!strcmp(tokens[0], "echo")){
+                for(int i=0;i<nr_tokens;i++){
+                    for(int j=0;j<nr_alias;j++){
+                        if(!strcmp(tokens[i],name[j])){
+                            free(tokens[i]);
+                            tokens[i] = (char *)malloc(strlen(value[j]) + 1);
+                            strcpy(tokens[i], value[j]);
+                            break;
+                        }
+                    }
+                }
+            }
+            execvp(tokens[0], tokens);
+            return -1;
         }
     } else {
         if (idx) {
@@ -128,6 +169,7 @@ int run_command(int nr_tokens, char *tokens[]) {
  *   Return other value on error, which leads the program to exit.
  */
 int initialize(int argc, char *const argv[]) {
+
     return 0;
 }
 
