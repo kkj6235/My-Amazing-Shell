@@ -21,6 +21,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
+
 /***********************************************************************
  * run_command()
  *
@@ -35,32 +36,81 @@
  */
 int run_command(int nr_tokens, char *tokens[]) {
     if (strcmp(tokens[0], "exit") == 0) return 0;
-
+    int pipefd[2];
+    int idx = 0;
+    for (int i = 0; i < nr_tokens; i++) {
+        if (!strcmp(tokens[i], "|")) {
+            idx = i;
+            if (pipe(pipefd) == -1) {
+                perror("pipe 생성 중 에러");
+                exit(EXIT_FAILURE);
+            }
+            break;
+        }
+    }
     pid_t pid;
     pid = fork();
-    int state;
+
 
     if (pid == 0) {
-        if (!strcmp(tokens[0], "cd")) {
-            if (!strcmp(tokens[1], "~") || nr_tokens == 1) {
-                if (chdir(getenv("HOME")) == -1) {
-//                    fprintf(stderr, "-bash: cd: %s: No such file or directory\n", tokens[1]);
-                    return -1;
-                }
-            } else {
-                if (chdir(tokens[1]) == -1) {
-//                    fprintf(stderr, "-bash: cd: %s: No such file or directory\n", tokens[1]);
-                    return -1;
+        if (idx) {
+            close(pipefd[0]);
+            dup2(pipefd[1], STDOUT_FILENO);
+            close(pipefd[1]);
+
+            char **command_1;
+            command_1 = (char **) malloc(sizeof(char *) * (idx + 1));
+            for (int i = 0; i < idx; i++) {
+                command_1[i] = strdup(tokens[i]);
+            }
+            command_1[idx] = NULL;
+
+            execvp(command_1[0], command_1);
+            return -1;
+
+        } else {
+            if (!strcmp(tokens[0], "cd")) {
+                if (!strcmp(tokens[1], "~") || nr_tokens == 1) {
+                    if (chdir(getenv("HOME")) == -1) {
+                        return -1;
+                    }
+                } else {
+                    if (chdir(tokens[1]) == -1) {
+                        return -1;
+                    }
                 }
             }
-
-        } else if (!strcmp(tokens[0], "exit")) {
-            return 0;
-        } else {
-            return execv(tokens[0], tokens);
+            else{
+                execvp(tokens[0], tokens);
+            }
         }
     } else {
-        wait(&state);
+        if (idx) {
+            close(pipefd[1]);
+            pid_t pid2 = fork();
+            if (pid2 == 0) {
+                dup2(pipefd[0], STDIN_FILENO);
+                close(pipefd[0]);
+
+                char **command_2;
+                command_2 = (char **) malloc(sizeof(char *) * (nr_tokens - idx));
+                for (int i = idx + 1; i < nr_tokens; i++) {
+                    command_2[i - idx - 1] = strdup(tokens[i]);
+                }
+                command_2[nr_tokens - idx - 1] = NULL;
+                execvp(command_2[0], command_2);
+                strcpy(tokens[0], command_2[0]);
+                return -1;
+            }
+            else{
+                close(pipefd[0]);
+                wait(NULL);
+                wait(NULL);
+            }
+        }
+        else{
+            wait(NULL);
+        }
     }
     return 1;
 }
