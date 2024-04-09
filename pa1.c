@@ -68,7 +68,16 @@ int run_command(int nr_tokens, char *tokens[]) {
                 command_1[i] = strdup(tokens[i]);
             }
             command_1[idx] = NULL;
-
+            for(int i=0;i<idx;i++){
+                for(int j=0;j<nr_alias;j++){
+                    if(!strcmp(command_1[i],name[j])){
+                        free(command_1[i]);
+                        command_1[i] = (char *)malloc(strlen(value[j]) + 1);
+                        strcpy(command_1[i], value[j]);
+                        break;
+                    }
+                }
+            }
             execvp(command_1[0], command_1);
             return -1;
 
@@ -139,6 +148,24 @@ int run_command(int nr_tokens, char *tokens[]) {
                     command_2[i - idx - 1] = strdup(tokens[i]);
                 }
                 command_2[nr_tokens - idx - 1] = NULL;
+                for(int i=0;i<nr_tokens-idx-1;i++){
+                    for(int j=0;j<nr_alias;j++){
+                        if(!strcmp(command_2[i],name[j])){
+                            free(command_2[i]);
+
+                            int k=i;
+                            char *token;
+                            token = strtok(value[j], " ");
+
+                            while(token!=NULL){
+                                command_2[k] = (char *)malloc(strlen(token) + 1);
+                                strcpy(command_2[k++], token);
+                                token = strtok(NULL, " ");
+                            }
+                            break;
+                        }
+                    }
+                }
                 execvp(command_2[0], command_2);
                 strcpy(tokens[0], command_2[0]);
                 return -1;
