@@ -42,6 +42,8 @@ int run_command(int nr_tokens, char *tokens[]) {
     if (strcmp(tokens[0], "exit") == 0) return 0;
     int pipefd[2];
     int idx = 0;
+
+
     for (int i = 0; i < nr_tokens; i++) {
         if (!strcmp(tokens[i], "|")) {
             idx = i;
@@ -52,7 +54,9 @@ int run_command(int nr_tokens, char *tokens[]) {
             break;
         }
     }
+    fflush(stdout);
     pid_t pid;
+    int state;
     pid = fork();
 
 
@@ -68,30 +72,42 @@ int run_command(int nr_tokens, char *tokens[]) {
                 command_1[i] = strdup(tokens[i]);
             }
             command_1[idx] = NULL;
-            for(int i=0;i<idx;i++){
-                for(int j=0;j<nr_alias;j++){
-                    if(!strcmp(command_1[i],name[j])){
-                        free(command_1[i]);
-                        command_1[i] = (char *)malloc(strlen(value[j]) + 1);
-                        strcpy(command_1[i], value[j]);
-                        break;
+            if(nr_alias!=0){
+                for(int i=0;i<idx;i++){
+                    for(int j=0;j<nr_alias;j++){
+                        if(!strcmp(command_1[i],name[j])){
+                            free(command_1[i]);
+                            command_1[i] = (char *)malloc(strlen(value[j]) + 1);
+                            strcpy(command_1[i], value[j]);
+                            break;
+                        }
                     }
                 }
             }
+
             execvp(command_1[0], command_1);
             return -1;
-
         }
         else {
+            // 파이프 아닌 경우
             if (!strcmp(tokens[0], "cd")) {
-                if (!strcmp(tokens[1], "~") || nr_tokens == 1) {
+                if(nr_tokens==1){
                     if (chdir(getenv("HOME")) == -1) {
                         return -1;
                     }
-                } else {
+                    return 1;
+                }
+                else if (!strcmp(tokens[1], "~")) {
+                    if (chdir(getenv("HOME")) == -1) {
+                        return -1;
+                    }
+                    return 1;
+                }
+                else {
                     if (chdir(tokens[1]) == -1) {
                         return -1;
                     }
+                    return 1;
                 }
             }
             else if(!strcmp(tokens[0], "alias")){
@@ -120,27 +136,33 @@ int run_command(int nr_tokens, char *tokens[]) {
                 }
             }
             else if(!strcmp(tokens[0], "echo")){
-                for(int i=0;i<nr_tokens;i++){
-                    for(int j=0;j<nr_alias;j++){
-                        if(!strcmp(tokens[i],name[j])){
-                            free(tokens[i]);
-                            tokens[i] = (char *)malloc(strlen(value[j]) + 1);
-                            strcpy(tokens[i], value[j]);
-                            break;
+                if(nr_alias!=0){
+                    for(int i=0;i<nr_tokens;i++){
+                        for(int j=0;j<nr_alias;j++){
+                            if(!strcmp(tokens[i],name[j])){
+                                free(tokens[i]);
+                                tokens[i] = (char *)malloc(strlen(value[j]) + 1);
+                                strcpy(tokens[i], value[j]);
+                                break;
+                            }
                         }
                     }
                 }
+
             }
+
             execvp(tokens[0], tokens);
+
             return -1;
         }
     } else {
         if (idx) {
-            close(pipefd[1]);
             pid_t pid2 = fork();
             if (pid2 == 0) {
                 dup2(pipefd[0], STDIN_FILENO);
                 close(pipefd[0]);
+                close(pipefd[1]);
+
 
                 char **command_2;
                 command_2 = (char **) malloc(sizeof(char *) * (nr_tokens - idx));
@@ -148,32 +170,37 @@ int run_command(int nr_tokens, char *tokens[]) {
                     command_2[i - idx - 1] = strdup(tokens[i]);
                 }
                 command_2[nr_tokens - idx - 1] = NULL;
-                for(int i=0;i<nr_tokens-idx-1;i++){
-                    for(int j=0;j<nr_alias;j++){
-                        if(!strcmp(command_2[i],name[j])){
-                            free(command_2[i]);
+                if(nr_alias!=0){
+                    for(int i=0;i<nr_tokens-idx-1;i++){
+                        for(int j=0;j<nr_alias;j++){
+                            if(!strcmp(command_2[i],name[j])){
+                                free(command_2[i]);
 
-                            int k=i;
-                            char *token;
-                            token = strtok(value[j], " ");
+                                int k=i;
+                                char *token;
+                                token = strtok(value[j], " ");
 
-                            while(token!=NULL){
-                                command_2[k] = (char *)malloc(strlen(token) + 1);
-                                strcpy(command_2[k++], token);
-                                token = strtok(NULL, " ");
+                                while(token!=NULL){
+                                    command_2[k] = (char *)malloc(strlen(token) + 1);
+                                    strcpy(command_2[k++], token);
+                                    token = strtok(NULL, " ");
+                                }
+                                break;
                             }
-                            break;
                         }
                     }
+
                 }
                 execvp(command_2[0], command_2);
                 strcpy(tokens[0], command_2[0]);
-                return -1;
+                return -22;
             }
             else{
+                close(pipefd[1]);
                 close(pipefd[0]);
-                wait(NULL);
-                wait(NULL);
+                waitpid(pid,&state,0);
+                waitpid(pid2,&state,0);
+
             }
         }
         else{
