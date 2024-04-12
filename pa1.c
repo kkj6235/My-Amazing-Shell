@@ -86,7 +86,7 @@ int run_command(int nr_tokens, char *tokens[]) {
             }
 
             execvp(command_1[0], command_1);
-            return -1;
+            return -22;
         }
         else {
             // 파이프 아닌 경우
